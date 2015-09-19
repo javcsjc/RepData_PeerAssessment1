@@ -1,26 +1,36 @@
----
-Title: "Reproducible Research: Peer Assessment 1"
-Student: Jose Alberto Valdez Crespo
-Date: September 17, 2015
-output: 
-  html_document:
-    keep_md: true
----
 ## Global Settings
-```{r setoptions, echo=FALSE}
-library("knitr")
-opts_chunk$set(echo=TRUE, results="asis")
-```
+
 
 
 ## Loading and preprocessing the data
-```{r Load necessary libraries, echo=FALSE} 
-library(plyr)
-library(dplyr)
-library(lubridate)
+
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following objects are masked from 'package:plyr':
+## 
+##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+##     summarize
+## 
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+## 
+## 
+## Attaching package: 'lubridate'
+## 
+## The following object is masked from 'package:plyr':
+## 
+##     here
 ```
 
-```{r Preprocessing the data}
+
+```r
 ## Read csv file. Note: Data file is already in the same directory. Hence, no need to define path.
 rawdataset <- read.csv("activity.csv", na.strings = "NA", stringsAsFactors = FALSE)
 
@@ -30,7 +40,8 @@ cleandataset <- na.omit(rawdataset)
 
 
 ## 1.- What is mean total number of steps taken per day?
-```{r Question 1 Histogram}
+
+```r
 ## Need to group data by day
 grouped_by_day <- group_by(cleandataset, date)
 
@@ -44,23 +55,28 @@ hist(q1_dataset$stepsperday, col="red", main="Distribution of Number of Steps Ta
 abline(v=median(q1_dataset$stepsperday), lwd=2, lty=2)
 ```
 
-```{r Mean}
+![](PA1_template_files/figure-html/Question 1 Histogram-1.png) 
+
+
+```r
 ## Calculate and report the mean and median of the total number of steps taken per day
 
 ## Here we calculate the mean
 mean_steps <- mean(q1_dataset$stepsperday)
 ```
-The mean of the total number of steps is `r formatC(mean_steps, format="f", digits=2)`
+The mean of the total number of steps is 10766.19
 
-```{r Median}
+
+```r
 ## Here we calculate the median
 median_steps <- median(q1_dataset$stepsperday)
 ```
 
-The median is `r formatC(median_steps, format="f", digits=2)`
+The median is 10765.00
 
 ## 2. What is the average daily activity pattern?
-```{r Question 2}
+
+```r
 ## First we need to group the data by 5 minute interval across all dates
 grouped_by_interval <- group_by(cleandataset, interval)
 
@@ -72,22 +88,26 @@ average_activity <- summarise(grouped_by_interval, meanstepsbyinterval=mean(step
 plot(average_activity$interval, average_activity$meanstepsbyinterval, type = "l", col="red", xlab = "5 Minute Intervals", ylab = "Average Number of Steps", xlim= c(0, 2500), ylim=c(0,210), main = "Average Daily Activity Pattern")
 ```
 
-```{r}
+![](PA1_template_files/figure-html/Question 2-1.png) 
+
+
+```r
 ## Which 5 minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 ## First we need to find the maximum number of steps
 max_steps <- max(average_activity$meanstepsbyinterval)
 ```
-The maximum number of steps taken during any interval was `r formatC(max_steps, format="f", digits=2)`
+The maximum number of steps taken during any interval was 206.17
 
-```{r}
+
+```r
 ## Then we need to find which 5 minute interval corresponds to the maximum number of steps
-
 ```
 
 
 ## 3. Imputing missing values
-```{r Question 3}
+
+```r
 ## Calculate and report the total number of missing values in the dataset
 
 ## First we create a subset dataset which includes only observations with NAs values
@@ -96,9 +116,10 @@ onlynas <- subset(rawdataset, is.na(rawdataset))
 ## We count the number of observations for NAs
 na_number <- count(onlynas)
 ```
-The total number of missing values in the original dataset is `r na_number` observations.
+The total number of missing values in the original dataset is 2304 observations.
 
-```{r} 
+
+```r
 ## A better strategy for filling all the missing values is to use the mean of the 5 minute interval
 ## We take the file we created before to capture the average number of steps by interval.
 ## Need to change the field name "meanstepsbyinterval" to "steps"", that way both datasets will 
@@ -131,38 +152,43 @@ hist(q3_dataset$stepsperday, col="red", main="Distribution of Number of Steps Ta
 abline(v=median(q3_dataset$stepsperday), lwd=2, lty=2)
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+
+```r
 ## Calculate and report the mean and median total number of steps taken per day.
 ## Here we calculate the mean
 mean_steps2 <- mean(q3_dataset$stepsperday)
 ```
-The new mean is `r formatC(mean_steps2, format="f", digits=2)`
+The new mean is 10766.19
 
-```{r}
+
+```r
 ## Here we calculate the median
 median_steps2 <- median(q3_dataset$stepsperday)
 ```
-The new median is `r formatC(median_steps2, format="f", digits=2)`
+The new median is 10766.19
 
-```{r}
+
+```r
 ## Do these values differ from the estimates from the first part of the assignment?
 mean_delta <- mean_steps2-mean_steps
 median_delta <- median_steps2-median_steps
 ```
-The difference in mean between the first measurement and the second is `r formatC(mean_delta, format="f", digits=2)` steps.
+The difference in mean between the first measurement and the second is 0.00 steps.
 
-The difference in median between the first measurement and the second is `r formatC(median_delta, format="f", digits=2)` steps.
+The difference in median between the first measurement and the second is 1.19 steps.
 
-```{r}
+
+```r
 ## What is the impact of imputing missing data on the estimates of the total daily number of steps?
 ```
 The difference is negligible. After adding missing data we only saw an increase in the median by slightly more than 1 step. No major difference here.
 
 ## 4. Are there differences in activity patterns between weekdays and weekends?
-```{r}
+
+```r
 ## "date"" field on "newdataset" is chr type. Need to change it to POSIXct type
 newdataset$date <- ymd(newdataset$date)
-
-
 ```
 
