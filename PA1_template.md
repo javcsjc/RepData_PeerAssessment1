@@ -7,37 +7,7 @@
 ```r
 library(plyr)
 library(dplyr)
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-## 
-## The following objects are masked from 'package:plyr':
-## 
-##     arrange, count, desc, failwith, id, mutate, rename, summarise,
-##     summarize
-## 
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-## 
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```r
 library(lubridate)
-```
-
-```
-## 
-## Attaching package: 'lubridate'
-## 
-## The following object is masked from 'package:plyr':
-## 
-##     here
 ```
 
 
@@ -73,7 +43,7 @@ abline(v=median(q1_dataset$stepsperday), lwd=2, lty=2)
 ## Mean
 mean_steps <- mean(q1_dataset$stepsperday)
 ```
-The mean of the total number of steps is 10766.19
+The mean is 10766.19
 
 
 ```r
@@ -192,7 +162,11 @@ The difference in median between the first measurement and the second is 1.19 st
 ```r
 ## What is the impact of imputing missing data on the estimates of the total daily number of steps?
 ```
-The difference is negligible. After adding missing data we only saw an increase in the median by slightly more than 1 step. No major difference here.
+The difference is negligible. After adding missing data we only saw an increase in the median by slightly more than 1 step. 
+
+We also saw an frequency increase in the number of steps interval between 10,000 and 15,000 steps. 
+
+Other than that, there's no major difference here.
 
 ## 4. Are there differences in activity patterns between weekdays and weekends?
 
@@ -257,8 +231,5 @@ plot(workingweek_activity$interval, workingweek_activity$weekstepsbyinterval, ty
 
 ![](PA1_template_files/figure-html/Question 4 Panel Plots-1.png) 
 
-
-```r
-## Are there differences in activity patterns between weekdays and weekends?
-```
-Most notably, the plot graphics clearly indicate the amount of activity during the morning hours on weekends is considerably higher than on weekdays.
+### Are there differences in activity patterns between weekdays and weekends?
+Most notably, the plots clearly indicate the amount of activity during the morning hours on weekends is considerably higher than on weekdays.
