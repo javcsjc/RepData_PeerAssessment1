@@ -173,13 +173,15 @@ Other than that, there's no major difference here.
 ## 4. Are there differences in activity patterns between weekdays and weekends?
 
 ```r
-## "date"" field on "newdataset" is chr type. Need to change it to POSIXct type
+## "date"" field on "newdataset" is chr type. Need to change it to POSIXct type using the ymd function
+## from the lubridate package.
 newdataset$date <- ymd(newdataset$date)
 
 ## Create a new factor variable in the dataset with two levels - "weekday" and "weekend",
 ## indicating whether a given date is a weekday or a weekend.
 
-## First we need to identify the day of the week.
+## First we need to identify the day of the week. Here we use the weekdays function from the 
+## lubridate package.
 newdataset$dayweektype <- weekdays(newdataset$date)
 
 ## Filter those records where "dayweektype" is equal to "Saturday" or "Sunday"
@@ -189,7 +191,7 @@ weekend <- filter(newdataset, dayweektype == "Saturday" | dayweektype == "Sunday
 weekend$dayweektype <- c("weekend")
 
 ## Filter those records where "dayweektype" is equal to "Monday" or "Tuesday" or "Wednesday" 
-## or "Thursday" or "Friday"
+## or "Thursday" or "Friday".
 workingweek <- filter(newdataset, dayweektype == "Monday" | dayweektype == "Tuesday" | dayweektype == "Wednesday" | dayweektype == "Thursday" | dayweektype == "Friday")
 
 ## Rename the content of "dayweektype" to "weekday"

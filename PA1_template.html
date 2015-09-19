@@ -170,13 +170,15 @@ median_delta &lt;- median_steps2-median_steps</code></pre>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>4. Are there differences in activity patterns between weekdays and weekends?</h2>
-<pre class="r"><code>## &quot;date&quot;&quot; field on &quot;newdataset&quot; is chr type. Need to change it to POSIXct type
+<pre class="r"><code>## &quot;date&quot;&quot; field on &quot;newdataset&quot; is chr type. Need to change it to POSIXct type using the ymd function
+## from the lubridate package.
 newdataset$date &lt;- ymd(newdataset$date)
 
 ## Create a new factor variable in the dataset with two levels - &quot;weekday&quot; and &quot;weekend&quot;,
 ## indicating whether a given date is a weekday or a weekend.
 
-## First we need to identify the day of the week.
+## First we need to identify the day of the week. Here we use the weekdays function from the 
+## lubridate package.
 newdataset$dayweektype &lt;- weekdays(newdataset$date)
 
 ## Filter those records where &quot;dayweektype&quot; is equal to &quot;Saturday&quot; or &quot;Sunday&quot;
@@ -186,7 +188,7 @@ weekend &lt;- filter(newdataset, dayweektype == &quot;Saturday&quot; | dayweekty
 weekend$dayweektype &lt;- c(&quot;weekend&quot;)
 
 ## Filter those records where &quot;dayweektype&quot; is equal to &quot;Monday&quot; or &quot;Tuesday&quot; or &quot;Wednesday&quot; 
-## or &quot;Thursday&quot; or &quot;Friday&quot;
+## or &quot;Thursday&quot; or &quot;Friday&quot;.
 workingweek &lt;- filter(newdataset, dayweektype == &quot;Monday&quot; | dayweektype == &quot;Tuesday&quot; | dayweektype == &quot;Wednesday&quot; | dayweektype == &quot;Thursday&quot; | dayweektype == &quot;Friday&quot;)
 
 ## Rename the content of &quot;dayweektype&quot; to &quot;weekday&quot;
