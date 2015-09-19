@@ -110,7 +110,9 @@ plot(average_activity$interval, average_activity$meanstepsbyinterval, type = &qu
 ## First we need to find the maximum number of steps
 max_steps &lt;- max(average_activity$meanstepsbyinterval)</code></pre>
 <p>The maximum number of steps taken during any interval was 206.17</p>
-<pre class="r"><code>## Then we need to find which 5 minute interval corresponds to the maximum number of steps</code></pre>
+<pre class="r"><code>## Then we need to find which 5 minute interval corresponds to the maximum number of steps
+interval_max &lt;- filter(average_activity, interval, meanstepsbyinterval==max_steps)</code></pre>
+<p>The 5 minute interval that corresponds to the maximum number of steps is 835</p>
 </div>
 <div id="imputing-missing-values" class="section level2">
 <h2>3. Imputing missing values</h2>

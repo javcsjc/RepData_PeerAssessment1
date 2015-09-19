@@ -81,8 +81,10 @@ The maximum number of steps taken during any interval was 206.17
 
 ```r
 ## Then we need to find which 5 minute interval corresponds to the maximum number of steps
+interval_max <- filter(average_activity, interval, meanstepsbyinterval==max_steps)
 ```
 
+The 5 minute interval that corresponds to the maximum number of steps is 835
 
 ## 3. Imputing missing values
 
