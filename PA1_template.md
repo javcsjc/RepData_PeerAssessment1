@@ -1,8 +1,13 @@
-## Global Settings
+
 
 
 
 ## Loading and preprocessing the data
+
+```r
+library(plyr)
+library(dplyr)
+```
 
 ```
 ## 
@@ -20,7 +25,13 @@
 ## The following objects are masked from 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union
-## 
+```
+
+```r
+library(lubridate)
+```
+
+```
 ## 
 ## Attaching package: 'lubridate'
 ## 
@@ -39,7 +50,7 @@ cleandataset <- na.omit(rawdataset)
 ```
 
 
-## 1.- What is mean total number of steps taken per day?
+## 1. What is mean total number of steps taken per day?
 
 ```r
 ## Need to group data by day
@@ -59,16 +70,14 @@ abline(v=median(q1_dataset$stepsperday), lwd=2, lty=2)
 
 
 ```r
-## Calculate and report the mean and median of the total number of steps taken per day
-
-## Here we calculate the mean
+## Mean
 mean_steps <- mean(q1_dataset$stepsperday)
 ```
 The mean of the total number of steps is 10766.19
 
 
 ```r
-## Here we calculate the median
+## Median
 median_steps <- median(q1_dataset$stepsperday)
 ```
 
@@ -88,7 +97,7 @@ average_activity <- summarise(grouped_by_interval, meanstepsbyinterval=mean(step
 plot(average_activity$interval, average_activity$meanstepsbyinterval, type = "l", col="red", xlab = "5 Minute Intervals", ylab = "Average Number of Steps", xlim= c(0, 2500), ylim=c(0,210), main = "Average Daily Activity Pattern")
 ```
 
-![](PA1_template_files/figure-html/Question 2-1.png) 
+![](PA1_template_files/figure-html/Question 2 Time Series Plot-1.png) 
 
 
 ```r
@@ -137,14 +146,15 @@ onlynas$steps <- ifelse(onlynas$interval == average_activity$interval, average_a
 ## Now we only need to do a row bind between the "cleandataset" (No NAs), with this updated dataset
 newdataset <- rbind(cleandataset, onlynas)
 
-## Make a histogram of the total number of steps taken each year
-
 ## Need to group data by day
 by_day <- group_by(newdataset, date)
 
 ## Calculate the total number of steps taken by day
 q3_dataset <- summarise(by_day, stepsperday = sum(steps))
+```
 
+
+```r
 ## Make a histogram of the total number of steps taken each day
 hist(q3_dataset$stepsperday, col="red", main="Distribution of Number of Steps Taken by Day", xlab = "Number of Steps", ylab = "Frequency", ylim = c(0,40))
 
@@ -152,19 +162,18 @@ hist(q3_dataset$stepsperday, col="red", main="Distribution of Number of Steps Ta
 abline(v=median(q3_dataset$stepsperday), lwd=2, lty=2)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![](PA1_template_files/figure-html/Question 3 Histogram-1.png) 
 
 
 ```r
-## Calculate and report the mean and median total number of steps taken per day.
-## Here we calculate the mean
+## Mean
 mean_steps2 <- mean(q3_dataset$stepsperday)
 ```
 The new mean is 10766.19
 
 
 ```r
-## Here we calculate the median
+## Median
 median_steps2 <- median(q3_dataset$stepsperday)
 ```
 The new median is 10766.19
@@ -190,5 +199,66 @@ The difference is negligible. After adding missing data we only saw an increase 
 ```r
 ## "date"" field on "newdataset" is chr type. Need to change it to POSIXct type
 newdataset$date <- ymd(newdataset$date)
+
+## Create a new factor variable in the dataset with two levels - "weekday" and "weekend",
+## indicating whether a given date is a weekday or a weekend.
+
+## First we need to identify the day of the week.
+newdataset$dayweektype <- weekdays(newdataset$date)
+
+## Filter those records where "dayweektype" is equal to "Saturday" or "Sunday"
+weekend <- filter(newdataset, dayweektype == "Saturday" | dayweektype == "Sunday")
+
+## Rename the content of "dayweektype" to "weekend"
+weekend$dayweektype <- c("weekend")
+
+## Filter those records where "dayweektype" is equal to "Monday" or "Tuesday" or "Wednesday" 
+## or "Thursday" or "Friday"
+workingweek <- filter(newdataset, dayweektype == "Monday" | dayweektype == "Tuesday" | dayweektype == "Wednesday" | dayweektype == "Thursday" | dayweektype == "Friday")
+
+## Rename the content of "dayweektype" to "weekday"
+workingweek$dayweektype <- c("weekday")
+```
+We ended up with two datasets: One for days of the week and another one for the weekends.
+
+
+```r
+## Data preparation for the panel plots
+
+## Weekend - First we need to group the data by 5 minute interval across all dates
+weekend_by_interval <- group_by(weekend, interval)
+
+## Weekend - Then we need to get the mean of steps for each interval
+weekend_activity <- summarise(weekend_by_interval, weekendstepsbyinterval=mean(steps))
+
+## Weekday - First we need to group the data by 5 minute interval across all dates
+workingweek_by_interval <- group_by(workingweek, interval)
+
+## Weekday - Then we need to get the mean of steps for each interval
+workingweek_activity <- summarise(workingweek_by_interval, weekstepsbyinterval=mean(steps))
+```
+Data is ready for the plots.
+
+
+```r
+## Make a panel plot of the 5 minute interval (x-axis) and the average number of steps taken,
+## averaged across all weekday days or weekend days (y-axis).
+
+## Set the global graphic parameters for all the plots
+par(mfcol = c(2, 1), mar = c(4, 4, 3, 1), oma = c(0, 0, 2, 0))
+## par(mfcol = c(2, 1))
+
+## Create the Top plot
+plot(weekend_activity$interval, weekend_activity$weekendstepsbyinterval, type = "l", col="red", xlab = "Intervals", ylab = "Number of Steps", xlim= c(0, 2500), ylim=c(0,250), main = "Weekend")
+
+## Create the bottom plot
+plot(workingweek_activity$interval, workingweek_activity$weekstepsbyinterval, type = "l", col="red", xlab = "Intervals", ylab = "Number of Steps", xlim= c(0, 2500), ylim=c(0,250), main = "Weekday")
 ```
 
+![](PA1_template_files/figure-html/Question 4 Panel Plots-1.png) 
+
+
+```r
+## Are there differences in activity patterns between weekdays and weekends?
+```
+Most notably, the plot graphics clearly indicate the amount of activity during the morning hours on weekends is considerably higher than on weekdays.
