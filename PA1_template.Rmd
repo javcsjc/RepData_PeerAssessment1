@@ -163,6 +163,46 @@ The difference is negligible. After adding missing data we only saw an increase 
 ## "date"" field on "newdataset" is chr type. Need to change it to POSIXct type
 newdataset$date <- ymd(newdataset$date)
 
+## Create a new factor variable in the dataset with two levels - "weekday" and "weekend",
+## indicating whether a given date is a weekday or a weekend.
 
+## First we need to identify the day of the week.
+newdataset$dayweektype <- weekdays(newdataset$date)
+
+## Filter those records where "dayweektype" is equal to "Saturday" or "Sunday"
+weekend <- filter(newdataset, dayweektype == "Saturday" | dayweektype == "Sunday")
+
+## Rename the content of "dayweektype" to "weekend"
+weekend$dayweektype <- c("weekend")
+
+## Filter those records where "dayweektype" is equal to "Monday" or "Tuesday" or "Wednesday" 
+## or "Thursday" or "Friday"
+workingweek <- filter(newdataset, dayweektype == "Monday" | dayweektype == "Tuesday" | dayweektype == "Wednesday" | dayweektype == "Thursday" | dayweektype == "Friday")
+
+## Rename the content of "dayweektype" to "weekday"
+workingweek$dayweektype <- c("weekday")
 ```
+We ended up with two datasets: One for days of the week and another one for the weekends.
+
+```{r}
+## Data preparation for the panel plots
+
+## Weekend - First we need to group the data by 5 minute interval across all dates
+weekend_by_interval <- group_by(weekend, interval)
+
+## Weekend - Then we need to get the mean of steps for each interval
+weekend_activity <- summarise(weekend_by_interval, weekendstepsbyinterval=mean(steps))
+
+## Weekday - First we need to group the data by 5 minute interval across all dates
+workingweek_by_interval <- group_by(workingweek, interval)
+
+## Weekday - Then we need to get the mean of steps for each interval
+workingweek_activity <- summarise(workingweek_by_interval, weekstepsbyinterval=mean(steps))
+```
+
+```{r}
+## Make a panel plot of the 5 minute interval (x-axis) and the average number of steps taken,
+## averaged across all weekday days or weekend days (y-axis).
+
+
 
